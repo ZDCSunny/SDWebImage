@@ -12,4 +12,6 @@
 
 + (UIImage *)sd_imageWithData:(NSData *)data;
 
++(UIImage *)resetImageWith:(UIImage *)image;
+
 @end

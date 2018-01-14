@@ -16,6 +16,31 @@
 #endif
 
 @implementation UIImage (MultiFormat)
+//***************
+
++ (UIImage *)resetImageWith:(UIImage *)image{
+    return [image resizableImageNamed:[image scaleImage:image toScale:0.8]];
+}
+
+- (UIImage *)scaleImage:(UIImage *)image toScale:(float)scaleSize{
+    
+    UIGraphicsBeginImageContext(CGSizeMake(image.size.width * scaleSize, image.size.height * scaleSize));
+    // 下面方法，第一个参数表示区域大小。第二个参数表示是否是非透明的。如果需要显示半透明效果，需要传NO，否则传YES。第三个参数就是屏幕密度了
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(image.size.width * scaleSize, image.size.height * scaleSize), NO, [UIScreen mainScreen].scale);
+    
+    [image drawInRect:CGRectMake(0, 0, image.size.width * scaleSize, image.size.height * scaleSize)];
+    UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return scaledImage;
+    
+}
+- (UIImage *)resizableImageNamed:(UIImage *)image {
+    return [image resizableImageWithCapInsets:UIEdgeInsetsMake(0.1, 0.1, image.size.height - 0.1 , image.size.width - 0.1) resizingMode:UIImageResizingModeStretch];
+}
+//***************
+
+
 
 + (UIImage *)sd_imageWithData:(NSData *)data {
     if (!data) {
@@ -31,10 +56,13 @@
     else if ([imageContentType isEqualToString:@"image/webp"])
     {
         image = [UIImage sd_imageWithWebPData:data];
+        image = [UIImage resetImageWith:image];
     }
 #endif
     else {
         image = [[UIImage alloc] initWithData:data];
+        image = [UIImage resetImageWith:image];
+
         UIImageOrientation orientation = [self sd_imageOrientationFromImageData:data];
         if (orientation != UIImageOrientationUp) {
             image = [UIImage imageWithCGImage:image.CGImage
